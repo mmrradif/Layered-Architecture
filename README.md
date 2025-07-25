@@ -195,5 +195,6 @@ To ensure a robust and maintainable ASP.NET Core Web API, adhere to these guidel
 
 ## Further Resources
 
-- [GitHub Repository](https://github.com/mmrradif/Layered-Architecture) for full implementation details.
-- Contributions and feedback are welcome!
+- 📄 [Layered Architecture Guide](https://github.com/mmrradif/Layered-Architecture/blob/ff2f344cbc6862e849b7e43e4168718c7267cc71/Layered%20Architecture.pdf) for full implementation details.
+
+
