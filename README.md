@@ -167,15 +167,33 @@ public class UserService : IUserService
 
 ```
 
-## 7. Best Practices and Notes
-Keep controllers thin; business logic belongs in the BLL.
+## Best Practices
 
-Isolate data access in the DAL; avoid leaking EF Core entities outside the DAL.
+To ensure a robust and maintainable ASP.NET Core Web API, adhere to these guidelines:
 
-Use interfaces to enable loose coupling and testability.
+1. **Minimize Controller Logic**  
+   - Keep controllers lightweight, focusing on HTTP request/response handling.
+   - Delegate all business logic to the BLL for better separation of concerns.
 
-Avoid injecting DbContext directly into controllers.
+2. **Encapsulate Data Access**  
+   - Restrict EF Core entities to the DAL to prevent leakage.
+   - Use repositories to abstract database operations.
 
-Use DTOs for external contracts, never expose EF entities directly.
+3. **Leverage Interfaces**  
+   - Implement interfaces for services and repositories to promote loose coupling.
+   - Enhances testability by allowing mocking during unit tests.
 
-This architecture supports clean, maintainable, scalable, and testable ASP.NET Core Web APIs.
+4. **Avoid Direct DbContext Injection**  
+   - Inject repositories instead of `DbContext` into controllers or services.
+   - Reduces tight coupling and improves maintainability.
+
+5. **Use DTOs for API Contracts**  
+   - Expose DTOs to external clients instead of EF Core entities.
+   - Protects internal data models and ensures controlled data exposure.
+
+**Why It Matters**: These practices create a clean, scalable, and testable architecture, simplifying maintenance and future enhancements.
+
+## Further Resources
+
+- [GitHub Repository](https://github.com/mmrradif/Layered-Architecture) for full implementation details.
+- Contributions and feedback are welcome!
