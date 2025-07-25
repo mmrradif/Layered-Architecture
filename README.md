@@ -1,101 +1,77 @@
 # Layered-Architecture
 
-Layered-Architecture is a complete, step-by-step guide to implementing clean, maintainable, and testable architectures in ASP.NET Core Web API.
+Layered-Architecture is a comprehensive, step-by-step guide to building clean, maintainable, and testable ASP.NET Core Web API applications following a well-defined layered architecture pattern.
 
----
 
 ## 1. What is Layered Architecture?
 
-Layered Architecture divides an application into multiple logical layers, each with a single responsibility and clearly defined roles. This design pattern is widely used in enterprise applications and ensures:
+Layered Architecture divides an application into multiple logical layers, each with a clear responsibility and role. This pattern is widely adopted in enterprise software for:
 
-- **Separation of Concerns:** Each layer focuses on a specific responsibility.
-- **Maintainability:** Each layer can be modified or replaced independently.
-- **Testability:** Layers can be unit tested by mocking dependencies.
-- **Scalability and Flexibility:** Layers can evolve or scale without affecting others.
+- **Separation of Concerns:** Isolates responsibilities into distinct layers.
+- **Maintainability:** Allows independent development, testing, and modification.
+- **Testability:** Enables mocking and unit testing of individual layers.
+- **Scalability & Flexibility:** Supports evolution of layers without impacting others.
 
----
 
-## 2. Core Layers and Responsibilities
 
-| Layer                  | Responsibility                                | Typical Contents                                   |
-|------------------------|-----------------------------------------------|---------------------------------------------------|
-| API Layer (Presentation) | Expose endpoints, handle HTTP requests/responses | Controllers, routing, filters, middleware          |
-| Business Logic Layer (BLL) | Enforce business rules, validations, workflows | Service interfaces and implementations, DTO mapping |
-| Data Access Layer (DAL)   | Database CRUD operations, queries, persistence | DbContext, entity models, repository interfaces and implementations |
-| Shared/Common            | Shared models and helpers across layers         | DTOs, AutoMapper profiles, constants, utilities    |
+## 2. Core Layers and Their Responsibilities
 
----
+| Layer                   | Responsibility                              | Typical Contents                                  |
+|-------------------------|---------------------------------------------|--------------------------------------------------|
+| **API Layer (Presentation)** | Expose HTTP endpoints, handle requests/responses | Controllers, routing, filters, middleware         |
+| **Business Logic Layer (BLL)** | Implement business rules, validation, workflows | Service interfaces & implementations, DTO mapping |
+| **Data Access Layer (DAL)**   | Manage data persistence and queries          | DbContext, entity models, repositories             |
+| **Shared/Common Layer**       | Share reusable models and utilities across layers | DTOs, AutoMapper profiles, helpers, constants      |
+
+
 
 ## 3. Folder Structure Overview
 
-MySolution.sln
-│
-├── MyApp.API # Presentation Layer
-│ ├── Controllers # API controllers
-│ ├── Program.cs # App startup, DI setup
-│ ├── appsettings.json # Configurations
-│ └── DependencyInjection
-│ └── APIInjector.cs # API-layer DI registrations
-│
-├── MyApp.BLL # Business Logic Layer
-│ ├── Interfaces # Service interfaces (e.g., IUserService)
-│ ├── Services # Service implementations (e.g., UserService)
-│ └── DependencyInjection
-│ └── BLLInjector.cs # BLL-layer DI registrations
-│
-├── MyApp.DAL # Data Access Layer
-│ ├── Context # EF Core DbContext
-│ ├── Entities # EF entities
-│ ├── Repositories
-│ │ ├── Interfaces
-│ │ └── Implementations
-│ ├── Migrations
-│ └── DependencyInjection
-│ └── DALInjector.cs # DAL-layer DI registrations
-│
-└── MyApp.Shared # Shared Layer
-├── DTOs # Data Transfer Objects
-├── Mappings # AutoMapper Profiles
-└── Helpers # Utility classes
+![Folder Structure](https://github.com/mmrradif/Layered-Architecture/blob/3e4502ce811fc95b9597c2f8c32516f5a1076691/Folder%20Structure.png)
+
+The solution is organized into four main projects/layers, each with clear responsibilities:
+
+- **MyApp.API** — Presentation Layer (Controllers, Program.cs, DI)
+- **MyApp.BLL** — Business Logic Layer (Services, Interfaces, DI)
+- **MyApp.DAL** — Data Access Layer (Entities, DbContext, Repositories, DI)
+- **MyApp.Shared** — Shared/Common Layer (DTOs, Mappings, Helpers)
+
+This folder structure promotes modularity, separation of concerns, and maintainability.
 
 
----
 
 ## 4. Layer Responsibilities and Interaction
 
 ### API Layer
-- **Purpose:** Entry point for HTTP clients.
-- **Contains:** Only thin controllers.
-- **Calls:** Business Logic Layer (not directly DAL).
-- **Example:** `UsersController` calls `IUserService`.
+- Entry point for HTTP clients.
+- Contains thin controllers only.
+- Calls **only** the Business Logic Layer (BLL).
+- Example: `UsersController` calls `IUserService`.
 
 ### Business Logic Layer (BLL)
-- **Purpose:** Core business rules and workflows.
-- **Contains:** Service interfaces and implementations.
-- **Responsibilities:**
-  - Orchestrate calls to repositories in DAL.
-  - Map entities to DTOs and vice versa.
-  - Validate business rules.
-- **Example:** `UserService` implements `IUserService`, calls `IUserRepository`.
+- Core business rules, validations, workflows.
+- Contains service interfaces and their implementations.
+- Coordinates repository calls to the Data Access Layer (DAL).
+- Maps between entities and DTOs.
+- Example: `UserService` calls `IUserRepository`.
 
 ### Data Access Layer (DAL)
-- **Purpose:** Isolate all data access logic.
-- **Contains:** DbContext, entity classes, repository interfaces and implementations.
-- **Responsibilities:**
-  - Perform CRUD operations.
-  - Hide EF Core details from BLL.
-- **Example:** `UserRepository` implements `IUserRepository`.
+- Isolates data persistence.
+- Contains EF Core `DbContext`, entity models, and repositories.
+- Encapsulates CRUD and query logic.
+- Example: `UserRepository` implements `IUserRepository`.
 
 ### Shared Layer
-- **Purpose:** Reusable components and models.
-- **Contains:** DTOs, mapping profiles, helpers.
-- **Example:** `UserDto`, `UserMappingProfile`.
+- Contains reusable DTOs, mapping profiles, and helpers.
+- Shared models used across API, BLL, and DAL.
+- Example: `UserDto`, `UserMappingProfile`.
 
----
+
 
 ## 5. Dependency Injection Setup
 
 ### DALInjector.cs
+
 ```csharp
 public static class DALInjector
 {
@@ -106,7 +82,11 @@ public static class DALInjector
         return services;
     }
 }
-BLLInjector.cs
+```
+
+### BLLInjector.cs
+
+```csharp
 public static class BLLInjector
 {
     public static IServiceCollection AddBLLServices(this IServiceCollection services)
@@ -116,7 +96,11 @@ public static class BLLInjector
         return services;
     }
 }
-Program.cs
+```
+
+### Program.cs
+
+```csharp
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDALServices();
@@ -131,14 +115,22 @@ var app = builder.Build();
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
+
 app.Run();
-6. Layer Interaction Examples
-Controller calls BLL service (recommended):
+```
+
+
+## 6. Layer Interaction Examples
+
+### Controller calls BLL service (recommended):
+
+```csharp
 [ApiController]
 [Route("api/[controller]")]
 public class UsersController : ControllerBase
 {
     private readonly IUserService _userService;
+
     public UsersController(IUserService userService) => _userService = userService;
 
     [HttpGet("{id}")]
@@ -149,7 +141,12 @@ public class UsersController : ControllerBase
         return Ok(userDto);
     }
 }
-BLL calls DAL repository:
+```
+
+
+### BLL calls DAL repository:
+
+```csharp
 public class UserService : IUserService
 {
     private readonly IUserRepository _userRepository;
@@ -167,18 +164,18 @@ public class UserService : IUserService
         return entity == null ? null : _mapper.Map<UserDto>(entity);
     }
 }
-7. Best Practices and Notes
-Keep controllers thin.
 
-Business logic should live in the BLL, not in controllers.
+```
 
-DAL should be isolated for data persistence.
+## 7. Best Practices and Notes
+Keep controllers thin; business logic belongs in the BLL.
 
-Use interfaces to enable testability and loose coupling.
+Isolate data access in the DAL; avoid leaking EF Core entities outside the DAL.
+
+Use interfaces to enable loose coupling and testability.
 
 Avoid injecting DbContext directly into controllers.
 
-Use DTOs for external contracts and never expose EF entities directly.
+Use DTOs for external contracts, never expose EF entities directly.
 
-This layered approach ensures a clean, maintainable, and testable ASP.NET Core Web API that is easy to scale and extend.
-
+This architecture supports clean, maintainable, scalable, and testable ASP.NET Core Web APIs.
